@@ -1,7 +1,7 @@
 package io.workflow.bpmnsimulator.simulator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.workflow.bpmnsimulator.model.ProcessSimulationError.Field;
+import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
 import io.workflow.bpmnsimulator.util.JsonUtil;
@@ -24,6 +24,8 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class ProcessSimulatorTest {
 
+    private static final String PAYMENT_BPMN_URL = "/simulator/payment_process.json";
+
     @Autowired
     private CamundaProcessSimulator processSimulator;
 
@@ -32,7 +34,7 @@ class ProcessSimulatorTest {
 
     @Test
     void shouldReturnNoError() {
-        final ProcessSimulationRequest processSimulationRequest = readJson("/simulator/payment_process.json");
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL);
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
         assertTrue(simulationResult.getErrors().isEmpty());
     }
@@ -40,11 +42,10 @@ class ProcessSimulatorTest {
     @Test
     void shouldFailWithWrongStepId() {
         //given
-        final String bpmnUrl = "/simulator/payment_process.json";
-        final ProcessSimulationRequest processSimulationRequest = readJson(bpmnUrl);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL);
         processSimulationRequest.getSteps()
                 .get(0)
-                .setId("WRONG_TASK_ID");
+                .setId("NEW_TASK_ID");
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -52,10 +53,54 @@ class ProcessSimulatorTest {
         //then
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is("WRONG_TASK_ID")),
+                        hasProperty("stepId", is("NEW_TASK_ID")),
                         hasProperty("field", is(Field.ID)),
-                        hasProperty("actualFieldValue", nullValue()),
-                        hasProperty("expectedFieldValue", is("WRONG_TASK_ID"))
+                        hasProperty("expectedFieldValue", is("NEW_TASK_ID")),
+                        hasProperty("actualFieldValue", nullValue())
+                )
+        ));
+    }
+
+    @Test
+    void shouldFailWithWrongStepName() {
+        //given
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL);
+        processSimulationRequest.getSteps()
+                .get(0)
+                .setName("NEW_TASK_NAME");
+
+        //when
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
+
+        //then
+        assertThat(simulationResult.getErrors(), contains(
+                allOf(
+                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("field", is(Field.NAME)),
+                        hasProperty("expectedFieldValue", is("NEW_TASK_NAME")),
+                        hasProperty("actualFieldValue", is("Payment Task"))
+                )
+        ));
+    }
+
+    @Test
+    void shouldFailWithWrongStepAssignee() {
+        //given
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL);
+        processSimulationRequest.getSteps()
+                .get(0)
+                .setAssignee("NEW_TASK_ASSIGNEE");
+
+        //when
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
+
+        //then
+        assertThat(simulationResult.getErrors(), contains(
+                allOf(
+                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("field", is(Field.ASSIGNEE)),
+                        hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
+                        hasProperty("actualFieldValue", is("demo"))
                 )
         ));
     }

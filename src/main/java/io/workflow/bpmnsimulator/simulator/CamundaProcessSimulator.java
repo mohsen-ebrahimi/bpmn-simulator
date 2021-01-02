@@ -1,13 +1,11 @@
 package io.workflow.bpmnsimulator.simulator;
 
-import io.workflow.bpmnsimulator.model.ProcessSimulationError;
-import io.workflow.bpmnsimulator.model.ProcessSimulationError.Field;
-import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
-import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
-import io.workflow.bpmnsimulator.model.Step;
+import io.workflow.bpmnsimulator.model.*;
 import io.workflow.bpmnsimulator.service.DeploymentService;
 import io.workflow.bpmnsimulator.service.ProcessService;
 import io.workflow.bpmnsimulator.service.TaskInstanceService;
+import io.workflow.bpmnsimulator.fieldvalidator.FieldValidationResult;
+import io.workflow.bpmnsimulator.fieldvalidator.FieldValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
@@ -29,6 +27,8 @@ class CamundaProcessSimulator implements ProcessSimulator {
     private final ProcessService processService;
 
     private final TaskInstanceService taskInstanceService;
+
+    private final List<FieldValidator> fieldValidators;
 
     @Nonnull
     public ProcessSimulationResult simulate(@Nonnull final ProcessSimulationRequest processSimulationRequest) {
@@ -65,12 +65,24 @@ class CamundaProcessSimulator implements ProcessSimulator {
             final List<ProcessSimulationError> errors = assertStep(step, task);
             taskInstanceService.complete(task.getId());
             return errors;
-        }).orElse(List.of(ProcessSimulationError.create(step.getId(), Field.ID, null, step.getId())));
+        }).orElse(List.of(ProcessSimulationError.create(step.getId(), Field.ID, step.getId(), null)));
     }
 
     private List<ProcessSimulationError> assertStep(@Nonnull final Step step, @Nonnull final Task task) {
-        log.debug("No assertion has implemented yet.");
-        return List.of();
+        return fieldValidators.stream()
+                .map(field -> field.validate(step, task))
+                .filter(fieldValidationResult -> !fieldValidationResult.isValid())
+                .map(fieldValidationResult -> toProcessSimulationError(step.getId(), fieldValidationResult))
+                .collect(Collectors.toList());
+    }
+
+    @Nonnull
+    private ProcessSimulationError toProcessSimulationError(@Nonnull final String stepId,
+                                                            @Nonnull final FieldValidationResult fieldValidationResult) {
+        return ProcessSimulationError.create(stepId,
+                fieldValidationResult.getField(),
+                fieldValidationResult.getStepFieldValue(),
+                fieldValidationResult.getTaskFieldValue());
     }
 
 }

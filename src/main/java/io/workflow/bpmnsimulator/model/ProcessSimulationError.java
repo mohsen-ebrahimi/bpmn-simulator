@@ -15,16 +15,8 @@ public class ProcessSimulationError {
     private final Field field;
 
     @Nullable
-    private final String actualFieldValue;
-
-    @Nullable
     private final String expectedFieldValue;
 
-    public enum Field {
-        ID,
-        NAME,
-        ASSIGNEE,
-        PROCESS_VARIABLE,
-        ;
-    }
+    @Nullable
+    private final String actualFieldValue;
 }
