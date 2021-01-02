@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.Map;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Data
@@ -22,4 +24,7 @@ public class Step {
 
     @Nullable
     private String assignee;
+
+    @Nonnull
+    private Map<String, Object> processVariables;
 }

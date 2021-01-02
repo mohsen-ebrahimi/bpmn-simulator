@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -101,6 +102,43 @@ class ProcessSimulatorTest {
                         hasProperty("field", is(Field.ASSIGNEE)),
                         hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
                         hasProperty("actualFieldValue", is("demo"))
+                )
+        ));
+    }
+
+    @Test
+    void shouldFailWithInvalidProcessVariable() {
+        //given
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL);
+        final Map<String, Object> processVariables = processSimulationRequest.getSteps()
+                .get(0)
+                .getProcessVariables();
+        processVariables.put("new-key", "new-value");
+        processVariables.put("amount", 999);
+        processVariables.put("description", "new dummy description");
+
+        //when
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
+
+        //then
+        assertThat(simulationResult.getErrors(), containsInAnyOrder(
+                allOf(
+                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("field", is(Field.PROCESS_VARIABLE)),
+                        hasProperty("expectedFieldValue", is("{new-key=new-value}")),
+                        hasProperty("actualFieldValue", nullValue())
+                ),
+                allOf(
+                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("field", is(Field.PROCESS_VARIABLE)),
+                        hasProperty("expectedFieldValue", is("{amount=999}")),
+                        hasProperty("actualFieldValue", is("{amount=100}"))
+                ),
+                allOf(
+                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("field", is(Field.PROCESS_VARIABLE)),
+                        hasProperty("expectedFieldValue", is("{description=new dummy description}")),
+                        hasProperty("actualFieldValue", is("{description=this is a test description}"))
                 )
         ));
     }
