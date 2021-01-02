@@ -1,0 +1,11 @@
+{
+  "bpmnUrl": "bpmn/PaymentProcess.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "paymentTask",
+      "name": "Payment Task",
+      "assignee": "demo"
+    }
+  ]
+}
