@@ -1,11 +1,13 @@
 package io.workflow.bpmnsimulator.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Data(staticConstructor = "create")
+@Data
+@Builder
 public class ProcessSimulationError {
 
     @Nonnull
