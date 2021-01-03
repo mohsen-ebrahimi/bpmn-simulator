@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.fieldvalidator;
+package io.workflow.bpmnsimulator.validator;
 
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
 import io.workflow.bpmnsimulator.model.Step;

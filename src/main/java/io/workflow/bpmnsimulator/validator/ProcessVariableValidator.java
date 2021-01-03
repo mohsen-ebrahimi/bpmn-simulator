@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.fieldvalidator;
+package io.workflow.bpmnsimulator.validator;
 
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
@@ -10,6 +10,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +29,8 @@ class ProcessVariableValidator implements Validator {
     public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
         final Map<String, Object> processVariables = variableService.getProcessVariables(task.getExecutionId());
 
-        final List<ProcessSimulationError> simulationErrors = step.getProcessVariables()
+        final List<ProcessSimulationError> simulationErrors = step.getPreCondition()
+                .getExpectedProcessVariables()
                 .entrySet()
                 .stream()
                 .map(expectedProcessVariable -> validateProcessVariable(step, processVariables, expectedProcessVariable))
@@ -71,7 +73,7 @@ class ProcessVariableValidator implements Validator {
     }
 
     @Nonnull
-    private String toVariableString(@Nonnull final String key, @Nonnull final Object value) {
+    private String toVariableString(@Nonnull final String key, @Nullable final Object value) {
         return String.format("{%s=%s}", key, value);
     }
 }

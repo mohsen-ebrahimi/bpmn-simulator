@@ -3,12 +3,32 @@
   "deploymentName": "Payment Process",
   "steps": [
     {
+      "id": "startPayment",
+      "processVariables": {
+        "position": "Manager"
+      },
+      "preCondition": {
+        "expectedProcessVariables": {
+          "name": null,
+          "age": "30",
+          "position": "Manager"
+        }
+      }
+    },
+    {
       "id": "paymentTask",
       "name": "Payment Task",
       "assignee": "demo",
       "processVariables": {
         "amount": 100,
         "description": "this is a test description"
+      },
+      "preCondition": {
+        "expectedProcessVariables": {
+          "name": null,
+          "age": "30",
+          "position": "Manager"
+        }
       }
     }
   ]
