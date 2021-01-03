@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import java.util.Map;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -14,20 +12,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class Step {
+public class Condition {
 
     @Nonnull
-    private String id;
+    private Map<String, Object> expectedProcessVariables;
 
-    @Nullable
-    private String name;
-
-    @Nullable
-    private String assignee;
-
-    @Nullable
-    private Condition preCondition;
-
-    @Nonnull
-    private Map<String, Object> processVariables;
 }

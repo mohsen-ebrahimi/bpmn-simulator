@@ -1,13 +1,13 @@
 package io.workflow.bpmnsimulator.simulator;
 
-import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 import javax.annotation.Nonnull;
 
 public interface ProcessSimulator {
 
     @Nonnull
-    ProcessSimulationResult simulate(@Nonnull ProcessSimulationRequest processSimulationRequest);
+    ProcessInstance startSimulation(@Nonnull ProcessSimulationRequest processSimulationRequest);
 
 }

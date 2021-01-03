@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 @Slf4j
@@ -18,7 +19,14 @@ public class VariableService {
     public Map<String, Object> getProcessVariables(@Nonnull final String executionId) {
         final Map<String, Object> variables = runtimeService.getVariables(executionId);
         log.debug("Variables of execution with id: [{}] loaded: [{}]", executionId, variables);
-        
+
         return variables;
     }
+
+    public void saveProcessVariable(@Nonnull final String executionId,
+                                    @Nonnull final String variableName,
+                                    @Nullable final Object value) {
+        runtimeService.setVariable(executionId, variableName, value);
+    }
+
 }
