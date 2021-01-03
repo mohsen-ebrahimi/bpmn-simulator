@@ -1,10 +1,7 @@
 package io.workflow.bpmnsimulator.simulator;
 
-import io.workflow.bpmnsimulator.model.ProcessSimulationError;
-import io.workflow.bpmnsimulator.model.ProcessSimulationError.Field;
-import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
-import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
-import io.workflow.bpmnsimulator.model.Step;
+import io.workflow.bpmnsimulator.fieldvalidator.Validator;
+import io.workflow.bpmnsimulator.model.*;
 import io.workflow.bpmnsimulator.service.DeploymentService;
 import io.workflow.bpmnsimulator.service.ProcessService;
 import io.workflow.bpmnsimulator.service.TaskInstanceService;
@@ -29,6 +26,8 @@ class CamundaProcessSimulator implements ProcessSimulator {
     private final ProcessService processService;
 
     private final TaskInstanceService taskInstanceService;
+
+    private final List<Validator> validators;
 
     @Nonnull
     public ProcessSimulationResult simulate(@Nonnull final ProcessSimulationRequest processSimulationRequest) {
@@ -65,12 +64,23 @@ class CamundaProcessSimulator implements ProcessSimulator {
             final List<ProcessSimulationError> errors = assertStep(step, task);
             taskInstanceService.complete(task.getId());
             return errors;
-        }).orElse(List.of(ProcessSimulationError.create(step.getId(), Field.ID, null, step.getId())));
+        }).orElse(createIdSimulationError(step));
     }
 
     private List<ProcessSimulationError> assertStep(@Nonnull final Step step, @Nonnull final Task task) {
-        log.debug("No assertion has implemented yet.");
-        return List.of();
+        return validators.stream()
+                .flatMap(field -> field.validate(step, task).stream())
+                .collect(Collectors.toList());
+    }
+
+    @Nonnull
+    private List<ProcessSimulationError> createIdSimulationError(@Nonnull final Step step) {
+        return List.of(ProcessSimulationError.builder()
+                .stepId(step.getId())
+                .field(Field.ID)
+                .expectedFieldValue(step.getId())
+                .actualFieldValue(null)
+                .build());
     }
 
 }
