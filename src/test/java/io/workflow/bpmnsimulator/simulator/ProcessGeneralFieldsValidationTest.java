@@ -10,7 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.workflow.bpmnsimulator.util.JsonUtil.readJson;
-import static io.workflow.bpmnsimulator.util.TestUtil.getStep;
+import static io.workflow.bpmnsimulator.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,11 +20,11 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @SpringBootTest
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/cleanup.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
-class ProcessSimulatorTest {
+class ProcessGeneralFieldsValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_BPMN_URL = "/simulator/payment_process.json";
+    private static final String PAYMENT_BPMN_URL = "/simulator/payment-process-simulation-request.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
@@ -33,6 +33,20 @@ class ProcessSimulatorTest {
     void shouldReturnNoError() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+
+        //when
+        processSimulator.startSimulation(processSimulationRequest);
+
+        //then
+        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
+        assertTrue(processSimulationResult.getErrors().isEmpty());
+    }
+
+    @Test
+    void shouldReturnNoErrorWhenPreConditionIsNull() {
+        //given
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setPreCondition(null);
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -55,7 +69,7 @@ class ProcessSimulatorTest {
         final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("stepId", is(PAYMENT_STEP_NAME)),
                         hasProperty("field", is(Field.NAME)),
                         hasProperty("expectedFieldValue", is("NEW_TASK_NAME")),
                         hasProperty("actualFieldValue", is("Payment Task"))
@@ -76,7 +90,7 @@ class ProcessSimulatorTest {
         final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is("paymentTask")),
+                        hasProperty("stepId", is(PAYMENT_STEP_NAME)),
                         hasProperty("field", is(Field.ASSIGNEE)),
                         hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
                         hasProperty("actualFieldValue", is("demo"))
