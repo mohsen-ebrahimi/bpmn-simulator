@@ -24,7 +24,7 @@ class ProcessGeneralFieldsValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_BPMN_URL = "/simulator/payment-process-simulation-request.json";
+    private static final String PAYMENT_SIMULATION_REQUEST_URL = "/simulator/payment-process-simulation-request.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
@@ -32,7 +32,7 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldReturnNoError() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -45,7 +45,7 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldReturnNoErrorWhenPreConditionIsNull() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME).setPreCondition(null);
 
         //when
@@ -59,7 +59,7 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldFailWithWrongStepName() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME).setName("NEW_TASK_NAME");
 
         //when
@@ -80,7 +80,7 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldFailWithWrongStepAssignee() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME).setAssignee("NEW_TASK_ASSIGNEE");
 
         //when

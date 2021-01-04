@@ -1,0 +1,21 @@
+{
+  "bpmnUrl": "bpmn/payment-process-with-candidate-users-and-groups.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "startPayment",
+      "processVariables": {
+        "position": "Manager"
+      }
+    },
+    {
+      "id": "paymentTask",
+      "name": "Payment Task",
+      "candidateUsers": [
+        "demo",
+        "manager",
+        "supervisor"
+      ]
+    }
+  ]
+}

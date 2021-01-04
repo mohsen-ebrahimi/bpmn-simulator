@@ -40,14 +40,13 @@ class NodeValidationHandler implements TaskAssignedHandler, Ordered {
         return processSimulationRequest.getSteps()
                 .stream()
                 .filter(step -> step.getId().equals(taskEvent.getTaskDefinitionKey()))
-                .filter(step -> step.getPreCondition() != null)
                 .findAny()
                 .map(step -> validateStep(taskEvent.getId(), step))
                 .orElse(List.of());
     }
 
     private List<ProcessSimulationError> validateStep(@Nonnull final String taskId, @Nonnull final Step step) {
-        return taskInstanceService.loadTask(taskId)
+        return taskInstanceService.getTask(taskId)
                 .map(task -> validateStep(step, task))
                 .orElse(createIdSimulationError(step));
     }

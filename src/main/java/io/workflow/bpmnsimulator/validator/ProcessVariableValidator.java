@@ -29,6 +29,11 @@ class ProcessVariableValidator implements Validator {
     public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
         final Map<String, Object> processVariables = variableService.getProcessVariables(task.getExecutionId());
 
+        if (step.getPreCondition() == null) {
+            log.debug("Ignoring variables validation because no precondition found for step: [{}]", step);
+            return List.of();
+        }
+
         final List<ProcessSimulationError> simulationErrors = step.getPreCondition()
                 .getExpectedProcessVariables()
                 .entrySet()

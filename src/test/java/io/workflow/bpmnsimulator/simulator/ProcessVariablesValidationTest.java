@@ -24,7 +24,7 @@ class ProcessVariablesValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_BPMN_URL = "/simulator/payment-process-simulation-request.json";
+    private static final String PAYMENT_SIMULATION_REQUEST_URL = "/simulator/payment-process-simulation-request.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
@@ -32,7 +32,7 @@ class ProcessVariablesValidationTest {
     @Test
     void shouldFailWhenProcessVariableNotFound() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
         final Condition preCondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .getPreCondition();
         assertThat(preCondition, notNullValue());
@@ -70,7 +70,7 @@ class ProcessVariablesValidationTest {
     @Test
     void shouldFailWhenProcessVariableValueNotMatch() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
         final Condition preCondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .getPreCondition();
         assertThat(preCondition, notNullValue());
