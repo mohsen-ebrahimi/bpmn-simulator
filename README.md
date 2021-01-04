@@ -3,7 +3,7 @@ This framework helps the workflow engineers to simulate their bpmn processes
 and test them using various assertions.
 
  ## Contribution
-* You should clone this project using the following URL:
+* You can clone this project using the following URL:
 ```
 https://github.com/mohsen-ebrahimi/bpmn-simulator.git
 ```
