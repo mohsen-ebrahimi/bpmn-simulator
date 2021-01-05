@@ -6,5 +6,6 @@ public enum Field {
     ASSIGNEE,
     CANDIDATE_USERS,
     PROCESS_VARIABLE,
+    TRANSITION,
     ;
 }

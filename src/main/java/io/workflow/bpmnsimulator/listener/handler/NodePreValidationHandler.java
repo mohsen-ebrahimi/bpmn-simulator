@@ -1,60 +1,56 @@
-package io.workflow.bpmnsimulator.simulator.nodehandler;
+package io.workflow.bpmnsimulator.listener.handler;
 
-import io.workflow.bpmnsimulator.validator.Validator;
 import io.workflow.bpmnsimulator.model.*;
 import io.workflow.bpmnsimulator.service.TaskInstanceService;
 import io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder;
+import io.workflow.bpmnsimulator.validator.prevalidator.PreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.spring.boot.starter.event.TaskEvent;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class NodeValidationHandler implements TaskAssignedHandler, Ordered {
+class NodePreValidationHandler implements TaskAssignedHandler, Ordered {
 
     private final TaskInstanceService taskInstanceService;
 
-    private final List<Validator> validators;
+    private final List<PreValidator> preValidators;
 
     @Override
     public void onTaskAssigned(@Nonnull final ProcessSimulationRequest processSimulationRequest,
                                @Nonnull final TaskEvent taskEvent) {
-        final List<ProcessSimulationError> simulationErrors = simulateSteps(processSimulationRequest, taskEvent);
+        final List<ProcessSimulationError> simulationErrors = findStep(processSimulationRequest, taskEvent)
+                .map(step -> validateStep(step, taskEvent.getId()))
+                .orElse(List.of());
 
         final ProcessSimulationResult simulationResult = ProcessSimulationContextHolder.getProcessSimulationResult();
         simulationResult.getErrors().addAll(simulationErrors);
-        log.info("Simulating process instance: [{}] finished with result: [{}]",
-                taskEvent.getProcessInstanceId(), simulationResult);
+        log.info("Pre-validation for task: [{}] with request: [{}] finished with result: [{}]",
+                taskEvent.getId(), processSimulationRequest, simulationResult);
     }
 
-    private List<ProcessSimulationError> simulateSteps(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                                                       @Nonnull final TaskEvent taskEvent) {
+    private Optional<Step> findStep(@Nonnull final ProcessSimulationRequest processSimulationRequest,
+                                    @Nonnull final TaskEvent taskEvent) {
         return processSimulationRequest.getSteps()
                 .stream()
                 .filter(step -> step.getId().equals(taskEvent.getTaskDefinitionKey()))
-                .findAny()
-                .map(step -> validateStep(taskEvent.getId(), step))
-                .orElse(List.of());
+                .findAny();
     }
 
-    private List<ProcessSimulationError> validateStep(@Nonnull final String taskId, @Nonnull final Step step) {
+    private List<ProcessSimulationError> validateStep(@Nonnull final Step step, @Nonnull final String taskId) {
         return taskInstanceService.getTask(taskId)
-                .map(task -> validateStep(step, task))
-                .orElse(createIdSimulationError(step));
-    }
-
-    private List<ProcessSimulationError> validateStep(@Nonnull final Step step, @Nonnull final Task task) {
-        return validators.stream()
-                .flatMap(validator -> validator.validate(step, task).stream())
-                .collect(Collectors.toList());
+                .map(task -> preValidators.stream()
+                        .flatMap(preValidator -> preValidator.validate(step, task).stream())
+                        .collect(Collectors.toList()))
+                .orElseGet(() -> createIdSimulationError(step));
     }
 
     private List<ProcessSimulationError> createIdSimulationError(@Nonnull final Step step) {

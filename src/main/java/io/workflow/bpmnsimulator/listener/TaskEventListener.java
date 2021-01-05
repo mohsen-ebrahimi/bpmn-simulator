@@ -1,7 +1,7 @@
 package io.workflow.bpmnsimulator.listener;
 
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
-import io.workflow.bpmnsimulator.simulator.nodehandler.TaskAssignedHandler;
+import io.workflow.bpmnsimulator.listener.handler.TaskAssignedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.spring.boot.starter.event.TaskEvent;
