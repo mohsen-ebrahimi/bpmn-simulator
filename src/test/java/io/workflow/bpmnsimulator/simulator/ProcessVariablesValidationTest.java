@@ -1,6 +1,6 @@
 package io.workflow.bpmnsimulator.simulator;
 
-import io.workflow.bpmnsimulator.model.Condition;
+import io.workflow.bpmnsimulator.model.Precondition;
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
@@ -33,12 +33,12 @@ class ProcessVariablesValidationTest {
     void shouldFailWhenProcessVariableNotFound() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        final Condition preCondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .getPreCondition();
-        assertThat(preCondition, notNullValue());
-        preCondition.getExpectedProcessVariables().put("new-key", "new-value");
-        preCondition.getExpectedProcessVariables().put("amount", 999);
-        preCondition.getExpectedProcessVariables().put("description", "new dummy description");
+        final Precondition precondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
+                .getPrecondition();
+        assertThat(precondition, notNullValue());
+        precondition.getExpectedProcessVariables().put("new-key", "new-value");
+        precondition.getExpectedProcessVariables().put("amount", 999);
+        precondition.getExpectedProcessVariables().put("description", "new dummy description");
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -71,11 +71,11 @@ class ProcessVariablesValidationTest {
     void shouldFailWhenProcessVariableValueNotMatch() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        final Condition preCondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .getPreCondition();
-        assertThat(preCondition, notNullValue());
-        preCondition.getExpectedProcessVariables().put("name", "Baz Foo");
-        preCondition.getExpectedProcessVariables().put("age", null);
+        final Precondition precondition = getStep(processSimulationRequest, PAYMENT_STEP_NAME)
+                .getPrecondition();
+        assertThat(precondition, notNullValue());
+        precondition.getExpectedProcessVariables().put("name", "Baz Foo");
+        precondition.getExpectedProcessVariables().put("age", null);
 
         //when
         processSimulator.startSimulation(processSimulationRequest);

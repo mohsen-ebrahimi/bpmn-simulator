@@ -46,7 +46,7 @@ class ProcessGeneralFieldsValidationTest {
     void shouldReturnNoErrorWhenPreConditionIsNull() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setPreCondition(null);
+        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setPrecondition(null);
 
         //when
         processSimulator.startSimulation(processSimulationRequest);

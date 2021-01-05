@@ -31,7 +31,10 @@ public class Step {
     private List<String> candidateUsers = new ArrayList<>();
 
     @Nullable
-    private Condition preCondition;
+    private Precondition precondition;
+
+    @Nullable
+    private PostCondition postCondition;
 
     @Nonnull
     private Map<String, Object> processVariables = new HashMap<>();
