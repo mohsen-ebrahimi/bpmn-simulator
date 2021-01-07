@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.workflow</groupId>
-    <artifactId>bpmn-simulator</artifactId>
+    <groupId>io.bpmn-simulator</groupId>
+    <artifactId>bpmn-simulator-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>BPMN Simulator</name>
-    <description>BPMN simulator and testing framework</description>
+    <name>BPMN Simulator Core</name>
+    <description>The core module of BPMN simulator and testing library</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
