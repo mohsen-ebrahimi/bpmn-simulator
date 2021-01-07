@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class TestUtil {
+public class StepUtil {
 
     public static Step getStep(@Nonnull final ProcessSimulationRequest processSimulationRequest,
                                @Nonnull final String stepName) {

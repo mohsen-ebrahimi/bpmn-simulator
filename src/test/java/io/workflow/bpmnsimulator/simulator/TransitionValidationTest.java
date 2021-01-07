@@ -3,6 +3,7 @@ package io.workflow.bpmnsimulator.simulator;
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +11,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.workflow.bpmnsimulator.util.JsonUtil.readJson;
-import static io.workflow.bpmnsimulator.util.TestUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,19 +20,18 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @SpringBootTest
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/cleanup.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
-class ProcessSimulatorTest {
+class TransitionValidationTest {
 
-    private static final String PAYMENT_STEP_NAME = "paymentTask";
-
-    private static final String PAYMENT_BPMN_URL = "/simulator/payment_process.json";
+    private static final String TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON = "/simulator/transition-validation-simulation-request.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
 
     @Test
-    void shouldReturnNoError() {
+    void shouldReturnNoErrorWhenTransitionIsValid() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJson(TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON,
+                ProcessSimulationRequest.class, "one", "flowOne");
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -43,10 +42,10 @@ class ProcessSimulatorTest {
     }
 
     @Test
-    void shouldFailWithWrongStepName() {
+    void shouldReturnErrorWhenTransitionIsNotCorrect() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setName("NEW_TASK_NAME");
+        final ProcessSimulationRequest processSimulationRequest = readJson(TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON,
+                ProcessSimulationRequest.class, "two", "flowFour");
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -55,19 +54,20 @@ class ProcessSimulatorTest {
         final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is("paymentTask")),
-                        hasProperty("field", is(Field.NAME)),
-                        hasProperty("expectedFieldValue", is("NEW_TASK_NAME")),
-                        hasProperty("actualFieldValue", is("Payment Task"))
+                        hasProperty("stepId", is("gatewayNode")),
+                        hasProperty("field", is(Field.TRANSITION)),
+                        hasProperty("expectedFieldValue", is("flowFour")),
+                        hasProperty("actualFieldValue", is("flowTwo"))
                 )
         ));
     }
 
     @Test
-    void shouldFailWithWrongStepAssignee() {
+    @Disabled("Test will be passed after resolving https://github.com/mohsen-ebrahimi/bpmn-simulator/issues/12#issue-778493913")
+    void shouldReturnErrorWhenTransitionNotExists() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_BPMN_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setAssignee("NEW_TASK_ASSIGNEE");
+        final ProcessSimulationRequest processSimulationRequest = readJson(TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON,
+                ProcessSimulationRequest.class, "four", "flowOne");
 
         //when
         processSimulator.startSimulation(processSimulationRequest);
@@ -76,11 +76,12 @@ class ProcessSimulatorTest {
         final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is("paymentTask")),
-                        hasProperty("field", is(Field.ASSIGNEE)),
-                        hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
-                        hasProperty("actualFieldValue", is("demo"))
+                        hasProperty("stepId", is("gatewayNode")),
+                        hasProperty("field", is(Field.TRANSITION)),
+                        hasProperty("expectedFieldValue", is("flowOne")),
+                        hasProperty("actualFieldValue", nullValue())
                 )
         ));
     }
+
 }

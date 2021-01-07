@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.validator;
+package io.workflow.bpmnsimulator.validator.prevalidator;
 
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class ProcessVariableValidator implements Validator {
+class ProcessVariableValidator implements PreValidator {
 
     private final VariableService variableService;
 
@@ -29,7 +29,12 @@ class ProcessVariableValidator implements Validator {
     public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
         final Map<String, Object> processVariables = variableService.getProcessVariables(task.getExecutionId());
 
-        final List<ProcessSimulationError> simulationErrors = step.getPreCondition()
+        if (step.getPrecondition() == null) {
+            log.debug("Ignoring variables validation because no precondition found for step: [{}]", step);
+            return List.of();
+        }
+
+        final List<ProcessSimulationError> simulationErrors = step.getPrecondition()
                 .getExpectedProcessVariables()
                 .entrySet()
                 .stream()

@@ -1,5 +1,5 @@
 {
-  "bpmnUrl": "bpmn/PaymentProcess.bpmn",
+  "bpmnUrl": "bpmn/payment-process.bpmn",
   "deploymentName": "Payment Process",
   "steps": [
     {
@@ -7,7 +7,7 @@
       "processVariables": {
         "position": "Manager"
       },
-      "preCondition": {
+      "precondition": {
         "expectedProcessVariables": {
           "name": null,
           "age": "30",
@@ -23,7 +23,7 @@
         "amount": 100,
         "description": "this is a test description"
       },
-      "preCondition": {
+      "precondition": {
         "expectedProcessVariables": {
           "name": null,
           "age": "30",

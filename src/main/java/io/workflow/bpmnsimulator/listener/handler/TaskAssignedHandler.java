@@ -1,7 +1,6 @@
-package io.workflow.bpmnsimulator.simulator.nodehandler;
+package io.workflow.bpmnsimulator.listener.handler;
 
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
-import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
 import org.camunda.bpm.spring.boot.starter.event.TaskEvent;
 
 import javax.annotation.Nonnull;
