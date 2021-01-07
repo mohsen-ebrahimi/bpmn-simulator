@@ -1,6 +1,5 @@
 package io.workflow.bpmnsimulator.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +13,6 @@ import java.util.Map;
 import static lombok.AccessLevel.PROTECTED;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class Step {
 

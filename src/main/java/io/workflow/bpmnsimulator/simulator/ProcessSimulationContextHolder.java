@@ -35,6 +35,7 @@ public class ProcessSimulationContextHolder {
         return PROCESS_SIMULATION_REQUEST_HOLDER.get().getProcessSimulationResult();
     }
 
+    //TODO: clear context after simulation completed
     public static void remove() {
         PROCESS_SIMULATION_REQUEST_HOLDER.remove();
     }

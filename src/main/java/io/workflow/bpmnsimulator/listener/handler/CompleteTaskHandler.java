@@ -3,7 +3,7 @@ package io.workflow.bpmnsimulator.listener.handler;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.service.TaskInstanceService;
 import lombok.RequiredArgsConstructor;
-import org.camunda.bpm.spring.boot.starter.event.TaskEvent;
+import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +17,8 @@ class CompleteTaskHandler implements TaskAssignedHandler, Ordered {
 
     @Override
     public void onTaskAssigned(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                               @Nonnull final TaskEvent taskEvent) {
-        taskInstanceService.complete(taskEvent.getId());
+                               @Nonnull final DelegateTask delegateTask) {
+        taskInstanceService.complete(delegateTask.getId());
     }
 
     @Override

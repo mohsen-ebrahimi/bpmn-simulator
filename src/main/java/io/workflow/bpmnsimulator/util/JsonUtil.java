@@ -8,6 +8,7 @@ import org.apache.commons.io.input.AutoCloseInputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -20,7 +21,7 @@ public class JsonUtil {
     @SneakyThrows
     public static String readFile(@Nonnull final String path, final Object... args) {
         final String jsonContent = IOUtils.toString(new AutoCloseInputStream(
-                JsonUtil.class.getResourceAsStream(path)));
+                JsonUtil.class.getResourceAsStream(path)), Charset.defaultCharset());
         return String.format(jsonContent, Arrays.stream(args).map(JsonUtil::toStringJson).toArray());
     }
 

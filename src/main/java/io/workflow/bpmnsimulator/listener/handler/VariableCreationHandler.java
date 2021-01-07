@@ -4,7 +4,7 @@ import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.service.VariableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -18,9 +18,9 @@ class VariableCreationHandler implements NodeEndedHandler {
 
     @Override
     public void onNodeEnded(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                            @Nonnull final ExecutionEvent executionEvent) {
-        final String processInstanceId = executionEvent.getProcessInstanceId();
-        final String activityId = executionEvent.getCurrentActivityId();
+                            @Nonnull final DelegateExecution delegateExecution) {
+        final String processInstanceId = delegateExecution.getProcessInstanceId();
+        final String activityId = delegateExecution.getCurrentActivityId();
 
         processSimulationRequest
                 .getSteps()

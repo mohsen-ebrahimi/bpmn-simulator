@@ -5,7 +5,7 @@ import io.workflow.bpmnsimulator.model.PostCondition;
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
 import io.workflow.bpmnsimulator.model.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -18,10 +18,10 @@ import static java.util.Objects.requireNonNull;
 @Component
 class TransitionValidator implements PostValidator {
     @Override
-    public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final ExecutionEvent executionEvent) {
+    public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final DelegateExecution delegateExecution) {
         final PostCondition postCondition = requireNonNull(step.getPostCondition(), String.format("PostCondition of step cannot be null. [%s]", step));
         final String expectedTransition = postCondition.getTransition();
-        final String actualTransition = executionEvent.getCurrentTransitionId();
+        final String actualTransition = delegateExecution.getCurrentTransitionId();
 
         if (expectedTransition == null) {
             log.debug("Ignoring TransitionValidator because transition is null. [{}]", step);

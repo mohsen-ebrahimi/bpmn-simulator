@@ -8,7 +8,7 @@ import io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder;
 import io.workflow.bpmnsimulator.validator.postvalidator.PostValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -25,30 +25,30 @@ class NodePostValidationHandler implements NodeTakenHandler {
 
     @Override
     public void onNodeTaken(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                            @Nonnull final ExecutionEvent executionEvent) {
-        final List<ProcessSimulationError> simulationErrors = findStep(processSimulationRequest, executionEvent)
-                .map(step -> validateStep(step, executionEvent))
+                            @Nonnull final DelegateExecution delegateExecution) {
+        final List<ProcessSimulationError> simulationErrors = findStep(processSimulationRequest, delegateExecution)
+                .map(step -> validateStep(step, delegateExecution))
                 .orElse(List.of());
 
         final ProcessSimulationResult simulationResult = ProcessSimulationContextHolder.getProcessSimulationResult();
         simulationResult.getErrors().addAll(simulationErrors);
         log.info("Post-validation for node: [{}] with request: [{}] finished with result: [{}]",
-                executionEvent.getCurrentActivityId(), processSimulationRequest, simulationResult);
+                delegateExecution.getCurrentActivityId(), processSimulationRequest, simulationResult);
     }
 
     private Optional<Step> findStep(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                                    @Nonnull final ExecutionEvent executionEvent) {
+                                    @Nonnull final DelegateExecution delegateExecution) {
         return processSimulationRequest.getSteps()
                 .stream()
-                .filter(step -> step.getId().equals(executionEvent.getCurrentActivityId()))
+                .filter(step -> step.getId().equals(delegateExecution.getCurrentActivityId()))
                 .filter(step -> step.getPostCondition() != null)
                 .findAny();
     }
 
     private List<ProcessSimulationError> validateStep(@Nonnull final Step step,
-                                                      @Nonnull final ExecutionEvent executionEvent) {
+                                                      @Nonnull final DelegateExecution delegateExecution) {
         return postValidators.stream()
-                .flatMap(postValidator -> postValidator.validate(step, executionEvent).stream())
+                .flatMap(postValidator -> postValidator.validate(step, delegateExecution).stream())
                 .collect(Collectors.toList());
     }
 

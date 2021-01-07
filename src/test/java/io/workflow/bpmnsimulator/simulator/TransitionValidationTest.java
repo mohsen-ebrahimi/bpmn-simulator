@@ -1,13 +1,16 @@
 package io.workflow.bpmnsimulator.simulator;
 
+import io.workflow.bpmnsimulator.configuration.SimulatorConfiguration;
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.model.ProcessSimulationResult;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.workflow.bpmnsimulator.util.JsonUtil.readJson;
@@ -17,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = SimulatorConfiguration.class)
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/cleanup.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class TransitionValidationTest {

@@ -5,7 +5,7 @@ import io.workflow.bpmnsimulator.listener.handler.NodeTakenHandler;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ public class ExecutionEventListener {
     private final List<NodeTakenHandler> nodeTakenHandlers;
 
     @EventListener
-    public void execute(@Nonnull final ExecutionEvent executionEvent) {
+    public void execute(@Nonnull final DelegateExecution executionEvent) {
         final String eventName = executionEvent.getEventName();
 
         if (END_EVENT_NAME.equals(eventName)) {
