@@ -1,0 +1,17 @@
+{
+  "bpmnUrl": "bpmn/transition-validation.bpmn",
+  "deploymentName": "Transition Validation",
+  "steps": [
+    {
+      "id": "startEvent",
+      "processVariables": {
+        "path": %s
+      }
+    }, {
+      "id": "gatewayNode",
+      "postCondition": {
+        "transition": %s
+      }
+    }
+  ]
+}

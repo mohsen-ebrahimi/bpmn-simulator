@@ -7,7 +7,6 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,17 +21,6 @@ public class ProcessService {
         log.debug("A new process instance: [{}] started with process definition key: [{}]", processInstance, processDefinitionKey);
 
         return processInstance;
-    }
-
-    public Optional<ProcessInstance> getProcessInstance(@Nonnull final String processInstanceId) {
-        try {
-            return Optional.of(runtimeService.createProcessInstanceQuery()
-                    .processInstanceId(processInstanceId)
-                    .singleResult());
-        } catch (Exception e) {
-            log.warn("No process instance found with id: [{}]", processInstanceId);
-            return Optional.empty();
-        }
     }
 
 }

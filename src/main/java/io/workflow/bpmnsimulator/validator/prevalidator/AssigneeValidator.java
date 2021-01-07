@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.fieldvalidator;
+package io.workflow.bpmnsimulator.validator.prevalidator;
 
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
@@ -13,12 +13,12 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-class AssigneeValidator implements Validator {
+class AssigneeValidator implements PreValidator {
 
     @Override
     public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
-        final boolean isValid = Objects.equals(task.getAssignee(), step.getAssignee());
-        if (!isValid) {
+        final boolean isAssigneeValid = Objects.equals(task.getAssignee(), step.getAssignee());
+        if (!isAssigneeValid) {
             final ProcessSimulationError simulationError = ProcessSimulationError.builder()
                     .stepId(step.getId())
                     .field(Field.ASSIGNEE)

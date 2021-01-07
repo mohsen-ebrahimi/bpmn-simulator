@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -19,12 +21,21 @@ public class Step {
     @Nonnull
     private String id;
 
-    @Nonnull
+    @Nullable
     private String name;
 
     @Nullable
     private String assignee;
 
     @Nonnull
-    private Map<String, Object> processVariables;
+    private List<String> candidateUsers = new ArrayList<>();
+
+    @Nullable
+    private Precondition precondition;
+
+    @Nullable
+    private PostCondition postCondition;
+
+    @Nonnull
+    private Map<String, Object> processVariables = new HashMap<>();
 }
