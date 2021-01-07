@@ -6,7 +6,7 @@ import io.workflow.bpmnsimulator.simulator.ProcessSimulationContextHolder;
 import io.workflow.bpmnsimulator.validator.prevalidator.PreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.spring.boot.starter.event.TaskEvent;
+import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -26,22 +26,22 @@ class NodePreValidationHandler implements TaskAssignedHandler, Ordered {
 
     @Override
     public void onTaskAssigned(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                               @Nonnull final TaskEvent taskEvent) {
-        final List<ProcessSimulationError> simulationErrors = findStep(processSimulationRequest, taskEvent)
-                .map(step -> validateStep(step, taskEvent.getId()))
+                               @Nonnull final DelegateTask delegateTask) {
+        final List<ProcessSimulationError> simulationErrors = findStep(processSimulationRequest, delegateTask)
+                .map(step -> validateStep(step, delegateTask.getId()))
                 .orElse(List.of());
 
         final ProcessSimulationResult simulationResult = ProcessSimulationContextHolder.getProcessSimulationResult();
         simulationResult.getErrors().addAll(simulationErrors);
         log.info("Pre-validation for task: [{}] with request: [{}] finished with result: [{}]",
-                taskEvent.getId(), processSimulationRequest, simulationResult);
+                delegateTask.getId(), processSimulationRequest, simulationResult);
     }
 
     private Optional<Step> findStep(@Nonnull final ProcessSimulationRequest processSimulationRequest,
-                                    @Nonnull final TaskEvent taskEvent) {
+                                    @Nonnull final DelegateTask delegateTask) {
         return processSimulationRequest.getSteps()
                 .stream()
-                .filter(step -> step.getId().equals(taskEvent.getTaskDefinitionKey()))
+                .filter(step -> step.getId().equals(delegateTask.getTaskDefinitionKey()))
                 .findAny();
     }
 
