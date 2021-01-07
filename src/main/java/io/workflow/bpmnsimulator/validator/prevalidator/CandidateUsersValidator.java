@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.validator;
+package io.workflow.bpmnsimulator.validator.prevalidator;
 
 import io.workflow.bpmnsimulator.model.Field;
 import io.workflow.bpmnsimulator.model.ProcessSimulationError;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class CandidateUsersValidator implements Validator {
+class CandidateUsersValidator implements PreValidator {
 
     private final TaskInstanceService taskInstanceService;
 

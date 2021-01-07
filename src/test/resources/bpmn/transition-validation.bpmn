@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1fce1vl" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="transitionValidationProcess" name="Transition Validation Process" isExecutable="true">
+    <bpmn:startEvent id="startEvent" name="Start Event">
+      <bpmn:outgoing>Flow_1ivq1uh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="gatewayNode">
+      <bpmn:incoming>Flow_1ivq1uh</bpmn:incoming>
+      <bpmn:outgoing>flowOne</bpmn:outgoing>
+      <bpmn:outgoing>flowThree</bpmn:outgoing>
+      <bpmn:outgoing>flowTwo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="taskOne" name="Task One">
+      <bpmn:incoming>flowOne</bpmn:incoming>
+      <bpmn:outgoing>Flow_0uqmlol</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="flowOne" name="Flow One" sourceRef="gatewayNode" targetRef="taskOne">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${path == 'one'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:task id="taskThree" name="Task Three">
+      <bpmn:incoming>flowThree</bpmn:incoming>
+      <bpmn:outgoing>Flow_17efiy4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="flowThree" name="Flow Three" sourceRef="gatewayNode" targetRef="taskThree">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${path == 'three'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_119mnb2">
+      <bpmn:incoming>Flow_0uqmlol</bpmn:incoming>
+      <bpmn:incoming>Flow_17efiy4</bpmn:incoming>
+      <bpmn:incoming>Flow_076oe7a</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0uqmlol" sourceRef="taskOne" targetRef="Event_119mnb2" />
+    <bpmn:sequenceFlow id="Flow_17efiy4" sourceRef="taskThree" targetRef="Event_119mnb2" />
+    <bpmn:task id="taskTwo" name="Task Two">
+      <bpmn:incoming>flowTwo</bpmn:incoming>
+      <bpmn:outgoing>Flow_076oe7a</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="flowTwo" name="Flow Two" sourceRef="gatewayNode" targetRef="taskTwo">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${path == 'two'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_076oe7a" sourceRef="taskTwo" targetRef="Event_119mnb2" />
+    <bpmn:sequenceFlow id="Flow_1ivq1uh" sourceRef="startEvent" targetRef="gatewayNode" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="transitionValidationProcess">
+      <bpmndi:BPMNEdge id="Flow_1ivq1uh_di" bpmnElement="Flow_1ivq1uh">
+        <di:waypoint x="198" y="260" />
+        <di:waypoint x="295" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_076oe7a_di" bpmnElement="Flow_076oe7a">
+        <di:waypoint x="560" y="260" />
+        <di:waypoint x="712" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07hdo18_di" bpmnElement="flowTwo">
+        <di:waypoint x="345" y="260" />
+        <di:waypoint x="460" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="379" y="242" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17efiy4_di" bpmnElement="Flow_17efiy4">
+        <di:waypoint x="560" y="410" />
+        <di:waypoint x="640" y="410" />
+        <di:waypoint x="721" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uqmlol_di" bpmnElement="Flow_0uqmlol">
+        <di:waypoint x="560" y="120" />
+        <di:waypoint x="640" y="120" />
+        <di:waypoint x="725" y="243" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lntt48_di" bpmnElement="flowThree">
+        <di:waypoint x="320" y="285" />
+        <di:waypoint x="320" y="410" />
+        <di:waypoint x="460" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="322" y="345" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_100vqcg_di" bpmnElement="flowOne">
+        <di:waypoint x="320" y="235" />
+        <di:waypoint x="320" y="120" />
+        <di:waypoint x="460" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="326" y="175" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startEvent">
+        <dc:Bounds x="162" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="153" y="285" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1ax980e_di" bpmnElement="gatewayNode" isMarkerVisible="true">
+        <dc:Bounds x="295" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jc4g8l_di" bpmnElement="taskOne">
+        <dc:Bounds x="460" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jbykea_di" bpmnElement="taskThree">
+        <dc:Bounds x="460" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_119mnb2_di" bpmnElement="Event_119mnb2">
+        <dc:Bounds x="712" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oq4o42_di" bpmnElement="taskTwo">
+        <dc:Bounds x="460" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

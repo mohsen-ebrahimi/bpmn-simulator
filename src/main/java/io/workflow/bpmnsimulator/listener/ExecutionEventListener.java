@@ -1,7 +1,8 @@
 package io.workflow.bpmnsimulator.listener;
 
+import io.workflow.bpmnsimulator.listener.handler.NodeEndedHandler;
+import io.workflow.bpmnsimulator.listener.handler.NodeTakenHandler;
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
-import io.workflow.bpmnsimulator.simulator.nodehandler.NodeEndedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.spring.boot.starter.event.ExecutionEvent;
@@ -20,7 +21,11 @@ public class ExecutionEventListener {
 
     private static final String END_EVENT_NAME = "end";
 
+    private static final String TAKE_EVENT_NAME = "take";
+
     private final List<NodeEndedHandler> nodeEndedHandlers;
+
+    private final List<NodeTakenHandler> nodeTakenHandlers;
 
     @EventListener
     public void execute(@Nonnull final ExecutionEvent executionEvent) {
@@ -29,6 +34,8 @@ public class ExecutionEventListener {
         if (END_EVENT_NAME.equals(eventName)) {
             final ProcessSimulationRequest processSimulationRequest = getProcessSimulationRequest();
             nodeEndedHandlers.forEach(nodeEndedHandler -> nodeEndedHandler.onNodeEnded(processSimulationRequest, executionEvent));
+        } else if (TAKE_EVENT_NAME.equals(eventName)) {
+            nodeTakenHandlers.forEach(nodeTakenHandler -> nodeTakenHandler.onNodeTaken(getProcessSimulationRequest(), executionEvent));
         }
     }
 }

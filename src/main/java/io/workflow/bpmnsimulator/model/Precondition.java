@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class Condition {
+public class Precondition {
 
     @Nonnull
     private Map<String, Object> expectedProcessVariables;

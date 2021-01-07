@@ -1,4 +1,4 @@
-package io.workflow.bpmnsimulator.simulator.nodehandler;
+package io.workflow.bpmnsimulator.listener.handler;
 
 import io.workflow.bpmnsimulator.model.ProcessSimulationRequest;
 import io.workflow.bpmnsimulator.service.VariableService;
@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class VariableHandler implements NodeEndedHandler {
+class VariableCreationHandler implements NodeEndedHandler {
 
     private final VariableService variableService;
 
