@@ -1,0 +1,28 @@
+{
+  "bpmnUrl": "bpmn/hiring-process.bpmn",
+  "deploymentName": "Hire Process",
+  "steps": [
+    {
+      "id": "startHiring",
+      "processVariables": {
+        "position": "Manager"
+      }
+    },
+    {
+      "id": "interviewTask",
+      "name": "Interview Task",
+      "assignee": "hr",
+      "processVariables": {
+        "amount": 100,
+        "description": "this is a test description"
+      },
+      "precondition": {
+        "expectedProcessVariables": {
+          "name": null,
+          "age": "30",
+          "position": "Manager"
+        }
+      }
+    }
+  ]
+}
