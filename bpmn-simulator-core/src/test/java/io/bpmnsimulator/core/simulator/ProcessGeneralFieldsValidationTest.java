@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static io.bpmnsimulator.core.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
 import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,9 +25,11 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class ProcessGeneralFieldsValidationTest {
 
-    private static final String PAYMENT_STEP_NAME = "paymentTask";
-
     private static final String PAYMENT_SIMULATION_REQUEST_URL = "/simulator/payment-process-simulation-request.json";
+
+    private static final String PAYMENT_STEP_ID = "paymentTask";
+
+    private static final String PAYMENT_TASK_NAME = "Payment Task";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
@@ -39,10 +40,9 @@ class ProcessGeneralFieldsValidationTest {
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
         assertTrue(processSimulationResult.getErrors().isEmpty());
     }
 
@@ -50,13 +50,12 @@ class ProcessGeneralFieldsValidationTest {
     void shouldReturnNoErrorWhenPreConditionIsNull() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setPrecondition(null);
+        getStep(processSimulationRequest, PAYMENT_STEP_ID).setPrecondition(null);
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
         assertTrue(processSimulationResult.getErrors().isEmpty());
     }
 
@@ -64,19 +63,18 @@ class ProcessGeneralFieldsValidationTest {
     void shouldFailWithWrongStepName() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setName("NEW_TASK_NAME");
+        getStep(processSimulationRequest, PAYMENT_STEP_ID).setName("NEW_TASK_NAME");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is(PAYMENT_STEP_NAME)),
+                        hasProperty("stepId", is(PAYMENT_STEP_ID)),
                         hasProperty("field", is(Field.NAME)),
                         hasProperty("expectedFieldValue", is("NEW_TASK_NAME")),
-                        hasProperty("actualFieldValue", is("Payment Task"))
+                        hasProperty("actualFieldValue", is(PAYMENT_TASK_NAME))
                 )
         ));
     }
@@ -85,16 +83,15 @@ class ProcessGeneralFieldsValidationTest {
     void shouldFailWithWrongStepAssignee() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME).setAssignee("NEW_TASK_ASSIGNEE");
+        getStep(processSimulationRequest, PAYMENT_STEP_ID).setAssignee("NEW_TASK_ASSIGNEE");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
-                        hasProperty("stepId", is(PAYMENT_STEP_NAME)),
+                        hasProperty("stepId", is(PAYMENT_STEP_ID)),
                         hasProperty("field", is(Field.ASSIGNEE)),
                         hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
                         hasProperty("actualFieldValue", is("demo"))
