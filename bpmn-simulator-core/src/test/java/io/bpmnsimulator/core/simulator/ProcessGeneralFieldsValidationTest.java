@@ -1,15 +1,12 @@
 package io.bpmnsimulator.core.simulator;
 
-import io.bpmnsimulator.core.configuration.SimulatorConfiguration;
+import io.bpmnsimulator.core.model.BpmnTest;
 import io.bpmnsimulator.core.model.Field;
 import io.bpmnsimulator.core.model.ProcessSimulationRequest;
 import io.bpmnsimulator.core.model.ProcessSimulationResult;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
 import static io.bpmnsimulator.core.util.StepUtil.getStep;
@@ -19,8 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = SimulatorConfiguration.class)
+@BpmnTest
 @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/cleanup.sql")
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class ProcessGeneralFieldsValidationTest {
