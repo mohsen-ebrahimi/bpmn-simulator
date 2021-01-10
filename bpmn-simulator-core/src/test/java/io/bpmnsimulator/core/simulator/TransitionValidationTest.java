@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static io.bpmnsimulator.core.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -38,10 +37,9 @@ class TransitionValidationTest {
                 ProcessSimulationRequest.class, "one", "flowOne");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
         assertTrue(processSimulationResult.getErrors().isEmpty());
     }
 
@@ -52,10 +50,9 @@ class TransitionValidationTest {
                 ProcessSimulationRequest.class, "two", "flowFour");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
                         hasProperty("stepId", is("gatewayNode")),
@@ -74,10 +71,9 @@ class TransitionValidationTest {
                 ProcessSimulationRequest.class, "four", "flowOne");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
                         hasProperty("stepId", is("gatewayNode")),

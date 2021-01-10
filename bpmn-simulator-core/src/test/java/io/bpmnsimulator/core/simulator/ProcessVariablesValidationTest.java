@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static io.bpmnsimulator.core.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
 import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,10 +44,9 @@ class ProcessVariablesValidationTest {
         precondition.getExpectedProcessVariables().put("description", "new dummy description");
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), containsInAnyOrder(
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_NAME)),
@@ -82,10 +80,9 @@ class ProcessVariablesValidationTest {
         precondition.getExpectedProcessVariables().put("age", null);
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), containsInAnyOrder(
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_NAME)),

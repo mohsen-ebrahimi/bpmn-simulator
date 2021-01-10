@@ -1,6 +1,7 @@
 package io.bpmnsimulator.core.simulator;
 
 import io.bpmnsimulator.core.model.ProcessSimulationRequest;
+import io.bpmnsimulator.core.model.ProcessSimulationResult;
 import io.bpmnsimulator.core.service.DeploymentService;
 import io.bpmnsimulator.core.service.ProcessService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ class CamundaProcessSimulator implements ProcessSimulator {
     private final ProcessService processService;
 
     @Override
-    public void startSimulation(@Nonnull final ProcessSimulationRequest processSimulationRequest) {
+    public ProcessSimulationResult simulate(@Nonnull final ProcessSimulationRequest processSimulationRequest) {
         ProcessSimulationContextHolder.init(processSimulationRequest);
         final ProcessDefinition processDefinition = deploymentService.deploy(
                 processSimulationRequest.getBpmnUrl(),
@@ -36,6 +37,8 @@ class CamundaProcessSimulator implements ProcessSimulator {
              * https://github.com/mohsen-ebrahimi/bpmn-simulator/issues/12
              */
         }
+
+        return ProcessSimulationContextHolder.getProcessSimulationResult();
     }
 
 }

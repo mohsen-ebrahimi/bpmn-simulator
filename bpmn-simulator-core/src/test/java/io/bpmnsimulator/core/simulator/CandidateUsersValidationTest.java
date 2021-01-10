@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static io.bpmnsimulator.core.simulator.ProcessSimulationContextHolder.getProcessSimulationResult;
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
 import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,10 +42,9 @@ class CandidateUsersValidationTest {
         final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
         assertTrue(processSimulationResult.getErrors().isEmpty());
     }
 
@@ -58,10 +56,9 @@ class CandidateUsersValidationTest {
                 .setCandidateUsers(List.of("supervisor", "demo", "manager")); //shuffled list of candidate users
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult processSimulationResult = getProcessSimulationResult();
         assertTrue(processSimulationResult.getErrors().isEmpty());
     }
 
@@ -73,10 +70,9 @@ class CandidateUsersValidationTest {
                 .setCandidateUsers(List.of("demo", "supervisor")); // 'manager' missed
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_NAME)),
@@ -97,10 +93,9 @@ class CandidateUsersValidationTest {
                 .setCandidateUsers(List.of("supervisor", "developer", "demo", "manager")); //'developer' is redundant
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_NAME)),
@@ -121,10 +116,9 @@ class CandidateUsersValidationTest {
                 .setCandidateUsers(List.of("supervisor", "developer", "manager")); // 'developer' not match
 
         //when
-        processSimulator.startSimulation(processSimulationRequest);
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
 
         //then
-        final ProcessSimulationResult simulationResult = getProcessSimulationResult();
         assertThat(simulationResult.getErrors(), contains(
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_NAME)),
