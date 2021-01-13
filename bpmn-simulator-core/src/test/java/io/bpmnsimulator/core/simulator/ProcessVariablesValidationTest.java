@@ -19,7 +19,7 @@ class ProcessVariablesValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_SIMULATION_REQUEST_URL = "/simulator/payment-process-simulation-request.json";
+    private static final String PAYMENT_SIMULATION_REQUEST_URL = "/request/request-without-error.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;

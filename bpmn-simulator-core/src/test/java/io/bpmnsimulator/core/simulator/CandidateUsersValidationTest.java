@@ -23,7 +23,7 @@ class CandidateUsersValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL = "/simulator/payment-process-with-candidate-users-simulation-request.json";
+    private static final String PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL = "/request/request-with-candidate-users.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;

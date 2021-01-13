@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
 import static io.bpmnsimulator.core.util.JsonUtil.readJson;
-import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +20,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class ProcessGeneralFieldsValidationTest {
 
-    private static final String PAYMENT_SIMULATION_REQUEST_URL = "/simulator/payment-process-simulation-request.json";
+    private static final String SIMULATION_REQUEST_BASE_URL = "/request/";
 
     private static final String PAYMENT_STEP_ID = "paymentTask";
 
@@ -33,7 +32,8 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldReturnNoError() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-without-error.json";
+        final ProcessSimulationRequest processSimulationRequest = readJson(requestUrl, ProcessSimulationRequest.class);
 
         //when
         final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
@@ -43,10 +43,10 @@ class ProcessGeneralFieldsValidationTest {
     }
 
     @Test
-    void shouldReturnNoErrorWhenPreConditionIsNull() {
+    void shouldReturnNoErrorWhenPreconditionIsNull() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_ID).setPrecondition(null);
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-with-no-precondition.json";
+        final ProcessSimulationRequest processSimulationRequest = readJson(requestUrl, ProcessSimulationRequest.class);
 
         //when
         final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
@@ -58,8 +58,8 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldFailWithWrongStepName() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_ID).setName("NEW_TASK_NAME");
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-with-wrong-step-name.json";
+        final ProcessSimulationRequest processSimulationRequest = readJson(requestUrl, ProcessSimulationRequest.class);
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -69,7 +69,7 @@ class ProcessGeneralFieldsValidationTest {
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_ID)),
                         hasProperty("field", is(Field.NAME)),
-                        hasProperty("expectedFieldValue", is("NEW_TASK_NAME")),
+                        hasProperty("expectedFieldValue", is("NEW TASK NAME")),
                         hasProperty("actualFieldValue", is(PAYMENT_TASK_NAME))
                 )
         ));
@@ -78,8 +78,8 @@ class ProcessGeneralFieldsValidationTest {
     @Test
     void shouldFailWithWrongStepAssignee() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_SIMULATION_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_ID).setAssignee("NEW_TASK_ASSIGNEE");
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-with-wrong-assignee.json";
+        final ProcessSimulationRequest processSimulationRequest = readJson(requestUrl, ProcessSimulationRequest.class);
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -89,7 +89,7 @@ class ProcessGeneralFieldsValidationTest {
                 allOf(
                         hasProperty("stepId", is(PAYMENT_STEP_ID)),
                         hasProperty("field", is(Field.ASSIGNEE)),
-                        hasProperty("expectedFieldValue", is("NEW_TASK_ASSIGNEE")),
+                        hasProperty("expectedFieldValue", is("NEW TASK ASSIGNEE")),
                         hasProperty("actualFieldValue", is("demo"))
                 )
         ));

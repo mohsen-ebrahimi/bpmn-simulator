@@ -21,7 +21,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class TransitionValidationTest {
 
-    private static final String TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON = "/simulator/transition-validation-simulation-request.json";
+    private static final String TRANSITION_VALIDATION_SIMULATION_REQUEST_JSON = "/request/transition-validation-request.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;

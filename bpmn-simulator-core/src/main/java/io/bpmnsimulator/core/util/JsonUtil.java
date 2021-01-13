@@ -19,17 +19,17 @@ public class JsonUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @SneakyThrows
-    public static String readFile(@Nonnull final String path, final Object... args) {
+    public static String readFile(@Nonnull final String url, final Object... args) {
         final String jsonContent = IOUtils.toString(new AutoCloseInputStream(
-                JsonUtil.class.getResourceAsStream(path)), Charset.defaultCharset());
+                JsonUtil.class.getResourceAsStream(url)), Charset.defaultCharset());
         return String.format(jsonContent, Arrays.stream(args).map(JsonUtil::toStringJson).toArray());
     }
 
     @SneakyThrows
-    public static <T> T readJson(@Nonnull final String bpmnUrl,
+    public static <T> T readJson(@Nonnull final String url,
                                  @Nonnull final Class<T> clazz,
                                  final Object... args) {
-        final String jsonContent = JsonUtil.readFile(bpmnUrl, args);
+        final String jsonContent = JsonUtil.readFile(url, args);
         return OBJECT_MAPPER.readValue(jsonContent, clazz);
     }
 
