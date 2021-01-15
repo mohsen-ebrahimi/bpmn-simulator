@@ -1,0 +1,33 @@
+{
+  "bpmnUrl": "bpmn/payment-process.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "startPayment",
+      "processVariables": {
+        "position": "Manager"
+      },
+      "precondition": {
+        "expectedProcessVariables": {
+          "position": "Manager"
+        }
+      }
+    },
+    {
+      "id": "paymentTask",
+      "name": "Payment Task",
+      "assignee": "demo",
+      "processVariables": {
+        "amount": 100,
+        "description": "this is a test description"
+      },
+      "precondition": {
+        "expectedProcessVariables": {
+          "name": null,
+          "age": "30",
+          "position": "Manager"
+        }
+      }
+    }
+  ]
+}

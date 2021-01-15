@@ -6,13 +6,6 @@
       "id": "startPayment",
       "processVariables": {
         "position": "Manager"
-      },
-      "precondition": {
-        "expectedProcessVariables": {
-          "name": null,
-          "age": "30",
-          "position": "Manager"
-        }
       }
     },
     {
@@ -22,13 +15,6 @@
       "processVariables": {
         "amount": 100,
         "description": "this is a test description"
-      },
-      "precondition": {
-        "expectedProcessVariables": {
-          "name": null,
-          "age": "30",
-          "position": "Manager"
-        }
       }
     }
   ]
