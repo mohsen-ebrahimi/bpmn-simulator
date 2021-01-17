@@ -1,29 +1,28 @@
 package io.bpmnsimulator.core.simulator;
 
-import io.bpmnsimulator.core.model.*;
+import io.bpmnsimulator.core.BpmnTest;
+import io.bpmnsimulator.core.model.Field;
+import io.bpmnsimulator.core.model.ProcessSimulationError;
+import io.bpmnsimulator.core.model.ProcessSimulationRequest;
+import io.bpmnsimulator.core.model.ProcessSimulationResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static io.bpmnsimulator.core.util.JsonUtil.readJson;
+import static io.bpmnsimulator.core.util.JsonUtil.readJsonWithRelativePath;
 import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @BpmnTest
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/sql/cleanup.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/sql/cleanup.sql")
 class CandidateUsersValidationTest {
 
     private static final String PAYMENT_STEP_NAME = "paymentTask";
 
-    private static final String PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL = "/request/request-with-candidate-users.json";
+    private static final String PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL = "request/request-with-candidate-users.json";
 
     @Autowired
     private CamundaProcessSimulator processSimulator;
@@ -31,7 +30,7 @@ class CandidateUsersValidationTest {
     @Test
     void shouldReturnNoErrorWhenCandidateUsersMatch() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
 
         //when
         final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
@@ -43,7 +42,7 @@ class CandidateUsersValidationTest {
     @Test
     void shouldReturnNoErrorWhenOrderNotMatch() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .setCandidateUsers(List.of("supervisor", "demo", "manager")); //shuffled list of candidate users
 
@@ -57,7 +56,7 @@ class CandidateUsersValidationTest {
     @Test
     void shouldFailWhenExpectedCandidateUsersAreLessThanActualCandidateUsers() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .setCandidateUsers(List.of("demo", "supervisor")); // 'manager' missed
 
@@ -80,7 +79,7 @@ class CandidateUsersValidationTest {
     @Test
     void shouldFailWhenExpectedCandidateUsersAreMoreThanActualCandidateUsers() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .setCandidateUsers(List.of("supervisor", "developer", "demo", "manager")); //'developer' is redundant
 
@@ -103,7 +102,7 @@ class CandidateUsersValidationTest {
     @Test
     void shouldFailWhenOneCandidateUserNotMatch() {
         //given
-        final ProcessSimulationRequest processSimulationRequest = readJson(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
         getStep(processSimulationRequest, PAYMENT_STEP_NAME)
                 .setCandidateUsers(List.of("supervisor", "developer", "manager")); // 'developer' not match
 

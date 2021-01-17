@@ -1,0 +1,15 @@
+{
+  "bpmnUrl": "bpmn/payment-process.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "paymentTask",
+      "name": "Payment Task",
+      "assignee": "NEW TASK ASSIGNEE",
+      "processVariables": {
+        "amount": 100,
+        "description": "this is a test description"
+      }
+    }
+  ]
+}
