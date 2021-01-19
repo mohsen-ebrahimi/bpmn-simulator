@@ -11,8 +11,6 @@ import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static java.util.Objects.requireNonNull;
@@ -26,22 +24,22 @@ public class JsonUtil {
     @SneakyThrows
     public static <T> T readJsonWithRelativePath(@Nonnull final String url,
                                                  @Nonnull final Class<T> clazz,
-                                                 final Object... args) {
+                                                 @Nonnull final Object... args) {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         final URL resource = requireNonNull(classLoader.getResource(url), String.format("Resource: [%s] does not exist", url));
-        return readJsonWithAbsolutePath(Paths.get(resource.getPath()), clazz, args);
+        return readJsonWithAbsolutePath(resource.getPath(), clazz, args);
     }
 
     @SneakyThrows
-    public static <T> T readJsonWithAbsolutePath(@Nonnull final Path path,
+    public static <T> T readJsonWithAbsolutePath(@Nonnull final String path,
                                                  @Nonnull final Class<T> clazz,
-                                                 final Object... args) {
-        final String jsonContent = JsonUtil.readFile(path.toAbsolutePath().toString(), args);
+                                                 @Nonnull final Object... args) {
+        final String jsonContent = JsonUtil.readFile(path, args);
         return OBJECT_MAPPER.readValue(jsonContent, clazz);
     }
 
     @SneakyThrows
-    private static String readFile(@Nonnull final String url, final Object... args) {
+    private static String readFile(@Nonnull final String url, @Nonnull final Object... args) {
         final String jsonContent = IOUtils.toString(new AutoCloseInputStream(new FileInputStream(url)), Charset.defaultCharset());
         return String.format(jsonContent, Arrays.stream(args).map(JsonUtil::toStringJson).toArray());
     }
