@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static io.bpmnsimulator.core.util.JsonUtil.readJsonWithRelativePath;
-import static io.bpmnsimulator.core.util.StepUtil.getStep;
+import static io.bpmnsimulator.core.util.StepUtil.getPreConditionValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,8 +43,9 @@ class CandidateUsersValidationTest {
     void shouldReturnNoErrorWhenOrderNotMatch() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .setCandidateUsers(List.of("supervisor", "demo", "manager")); //shuffled list of candidate users
+        final List<String> expectedUserCandidates = getExpectedCandidateUsers(processSimulationRequest);
+        expectedUserCandidates.clear();
+        expectedUserCandidates.addAll(List.of("supervisor", "demo", "manager")); //shuffled list of candidate users
 
         //when
         final ProcessSimulationResult processSimulationResult = processSimulator.simulate(processSimulationRequest);
@@ -57,8 +58,9 @@ class CandidateUsersValidationTest {
     void shouldFailWhenExpectedCandidateUsersAreLessThanActualCandidateUsers() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .setCandidateUsers(List.of("demo", "supervisor")); // 'manager' missed
+        final List<String> expectedUserCandidates = getExpectedCandidateUsers(processSimulationRequest);
+        expectedUserCandidates.clear();
+        expectedUserCandidates.addAll(List.of("demo", "supervisor")); // 'manager' missed
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -80,8 +82,9 @@ class CandidateUsersValidationTest {
     void shouldFailWhenExpectedCandidateUsersAreMoreThanActualCandidateUsers() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .setCandidateUsers(List.of("supervisor", "developer", "demo", "manager")); //'developer' is redundant
+        final List<String> expectedUserCandidates = getExpectedCandidateUsers(processSimulationRequest);
+        expectedUserCandidates.clear();
+        expectedUserCandidates.addAll(List.of("supervisor", "developer", "demo", "manager")); //'developer' is redundant
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -103,8 +106,9 @@ class CandidateUsersValidationTest {
     void shouldFailWhenOneCandidateUserNotMatch() {
         //given
         final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(PAYMENT_PROCESS_WITH_CANDIDATE_USERS_REQUEST_URL, ProcessSimulationRequest.class);
-        getStep(processSimulationRequest, PAYMENT_STEP_NAME)
-                .setCandidateUsers(List.of("supervisor", "developer", "manager")); // 'developer' not match
+        final List<String> expectedUserCandidates = getExpectedCandidateUsers(processSimulationRequest);
+        expectedUserCandidates.clear();
+        expectedUserCandidates.addAll(List.of("supervisor", "developer", "manager")); // 'developer' not match
 
         //when
         final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
@@ -143,4 +147,11 @@ class CandidateUsersValidationTest {
                 .replace(" ", "")
                 .split(",");
     }
+
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    private List<String> getExpectedCandidateUsers(@Nonnull final ProcessSimulationRequest processSimulationRequest) {
+        return getPreConditionValue(processSimulationRequest, PAYMENT_STEP_NAME, Field.CANDIDATE_USERS, List.class);
+    }
+
 }

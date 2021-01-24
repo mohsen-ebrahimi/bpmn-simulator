@@ -1,8 +1,8 @@
-package io.bpmnsimulator.core.validator.prevalidator;
+package io.bpmnsimulator.core.validator.usertask;
 
+import io.bpmnsimulator.core.model.Condition;
 import io.bpmnsimulator.core.model.Field;
 import io.bpmnsimulator.core.model.ProcessSimulationError;
-import io.bpmnsimulator.core.model.Step;
 import io.bpmnsimulator.core.service.TaskInstanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +16,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.bpmnsimulator.core.model.Field.CANDIDATE_USERS;
+import static org.apache.commons.collections4.ListUtils.emptyIfNull;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class CandidateUsersValidator implements PreValidator {
+class CandidateUsersValidator implements UserTaskValidator<List<String>> {
 
     private final TaskInstanceService taskInstanceService;
 
+    @Nonnull
     @Override
-    public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
-        final List<String> expectedCandidateUsers = step.getCandidateUsers();
+    public List<ProcessSimulationError> validate(@Nonnull final UserTaskValidatorContext<List<String>> context) {
+        final Task task = context.getTask();
+        final Condition<List<String>> condition = context.getCondition();
+        final List<String> expectedCandidateUsers = emptyIfNull(condition.getExpectedValue());
         final List<String> actualCandidateUsers = taskInstanceService.getCandidateUsers(task.getId())
                 .stream()
                 .map(IdentityLink::getUserId)
@@ -39,9 +45,9 @@ class CandidateUsersValidator implements PreValidator {
                     missingCandidateUsers, extraCandidateUsers);
 
             final ProcessSimulationError simulationError = ProcessSimulationError.builder()
-                    .stepId(step.getId())
-                    .field(Field.CANDIDATE_USERS)
-                    .expectedFieldValue(step.getCandidateUsers().toString())
+                    .stepId(context.getStepId())
+                    .field(CANDIDATE_USERS)
+                    .expectedFieldValue(expectedCandidateUsers.toString())
                     .actualFieldValue(actualCandidateUsers.toString())
                     .build();
             log.info("'CandidateUsers' field validation failed: [{}]", simulationError);
@@ -51,4 +57,11 @@ class CandidateUsersValidator implements PreValidator {
 
         return List.of();
     }
+
+    @Nonnull
+    @Override
+    public Field getSupportedField() {
+        return CANDIDATE_USERS;
+    }
+
 }

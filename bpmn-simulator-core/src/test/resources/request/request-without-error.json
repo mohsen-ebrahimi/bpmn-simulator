@@ -7,27 +7,31 @@
       "processVariables": {
         "position": "Manager"
       },
-      "precondition": {
-        "expectedProcessVariables": {
-          "position": "Manager"
+      "preconditions": [
+        {
+          "field": "processVariables",
+          "expectedValue": {
+            "position": "Manager"
+          }
         }
-      }
+      ]
     },
     {
       "id": "paymentTask",
-      "name": "Payment Task",
-      "assignee": "demo",
       "processVariables": {
         "amount": 100,
         "description": "this is a test description"
       },
-      "precondition": {
-        "expectedProcessVariables": {
-          "name": null,
-          "age": "30",
-          "position": "Manager"
+      "preconditions": [
+        {
+          "field": "processVariables",
+          "expectedValue": {
+            "name": null,
+            "age": "30",
+            "position": "Manager"
+          }
         }
-      }
+      ]
     }
   ]
 }

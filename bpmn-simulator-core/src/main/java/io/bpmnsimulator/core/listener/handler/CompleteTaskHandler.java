@@ -4,14 +4,13 @@ import io.bpmnsimulator.core.model.ProcessSimulationRequest;
 import io.bpmnsimulator.core.service.TaskInstanceService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.DelegateTask;
-import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 
 @Component
 @RequiredArgsConstructor
-class CompleteTaskHandler implements TaskAssignedHandler, Ordered {
+class CompleteTaskHandler implements TaskAssignedHandler {
 
     private final TaskInstanceService taskInstanceService;
 

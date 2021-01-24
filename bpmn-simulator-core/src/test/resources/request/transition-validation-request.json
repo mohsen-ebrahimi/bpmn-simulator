@@ -7,11 +7,15 @@
       "processVariables": {
         "path": %s
       }
-    }, {
+    },
+    {
       "id": "gatewayNode",
-      "postCondition": {
-        "transition": %s
-      }
+      "postConditions": [
+        {
+          "field": "transition",
+          "expectedValue": %s
+        }
+      ]
     }
   ]
 }

@@ -4,8 +4,16 @@
   "steps": [
     {
       "id": "paymentTask",
-      "name": "NEW TASK NAME",
-      "assignee": "demo"
+      "preconditions": [
+        {
+          "field": "name",
+          "expectedValue": "NEW TASK NAME"
+        },
+        {
+          "field": "assignee",
+          "expectedValue": "demo"
+        }
+      ]
     }
   ]
 }

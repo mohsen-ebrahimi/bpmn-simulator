@@ -1,8 +1,8 @@
-package io.bpmnsimulator.core.validator.prevalidator;
+package io.bpmnsimulator.core.validator.usertask;
 
+import io.bpmnsimulator.core.model.Condition;
 import io.bpmnsimulator.core.model.Field;
 import io.bpmnsimulator.core.model.ProcessSimulationError;
-import io.bpmnsimulator.core.model.Step;
 import io.bpmnsimulator.core.service.VariableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,27 +18,27 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.bpmnsimulator.core.model.Field.PROCESS_VARIABLES;
+import static org.apache.commons.collections4.MapUtils.emptyIfNull;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class ProcessVariableValidator implements PreValidator {
+class ProcessVariableValidator implements UserTaskValidator<Map<String, Object>> {
 
     private final VariableService variableService;
 
+    @Nonnull
     @Override
-    public List<ProcessSimulationError> validate(@Nonnull final Step step, @Nonnull final Task task) {
+    public List<ProcessSimulationError> validate(@Nonnull final UserTaskValidatorContext<Map<String, Object>> context) {
+        final Task task = context.getTask();
+        final Condition<Map<String, Object>> condition = context.getCondition();
         final Map<String, Object> processVariables = variableService.getProcessVariables(task.getExecutionId());
 
-        if (step.getPrecondition() == null) {
-            log.debug("Ignoring variables validation because no precondition found for step: [{}]", step);
-            return List.of();
-        }
-
-        final List<ProcessSimulationError> simulationErrors = step.getPrecondition()
-                .getExpectedProcessVariables()
+        final List<ProcessSimulationError> simulationErrors = emptyIfNull(condition.getExpectedValue())
                 .entrySet()
                 .stream()
-                .map(expectedProcessVariable -> validateProcessVariable(step, processVariables, expectedProcessVariable))
+                .map(expectedProcessVariable -> validateProcessVariable(context, processVariables, expectedProcessVariable))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -48,14 +48,20 @@ class ProcessVariableValidator implements PreValidator {
     }
 
     @Nonnull
-    private Optional<ProcessSimulationError> validateProcessVariable(@Nonnull final Step step,
+    @Override
+    public Field getSupportedField() {
+        return PROCESS_VARIABLES;
+    }
+
+    @Nonnull
+    private Optional<ProcessSimulationError> validateProcessVariable(@Nonnull final UserTaskValidatorContext<Map<String, Object>> context,
                                                                      @Nonnull final Map<String, Object> actualProcessVariables,
                                                                      @Nonnull final Entry<String, Object> expectedProcessVariable) {
         final boolean hasProcessVariable = actualProcessVariables.containsKey(expectedProcessVariable.getKey());
         if (!hasProcessVariable) {
             final ProcessSimulationError simulationError = ProcessSimulationError.builder()
-                    .stepId(step.getId())
-                    .field(Field.PROCESS_VARIABLE)
+                    .stepId(context.getStepId())
+                    .field(PROCESS_VARIABLES)
                     .expectedFieldValue(toVariableString(expectedProcessVariable.getKey(), expectedProcessVariable.getValue()))
                     .actualFieldValue(null)
                     .build();
@@ -66,8 +72,8 @@ class ProcessVariableValidator implements PreValidator {
         final boolean isVariableValueValid = Objects.equals(actualProcessVariableValue, expectedProcessVariable.getValue());
         if (!isVariableValueValid) {
             final ProcessSimulationError simulationError = ProcessSimulationError.builder()
-                    .stepId(step.getId())
-                    .field(Field.PROCESS_VARIABLE)
+                    .stepId(context.getStepId())
+                    .field(PROCESS_VARIABLES)
                     .expectedFieldValue(toVariableString(expectedProcessVariable.getKey(), expectedProcessVariable.getValue()))
                     .actualFieldValue(toVariableString(expectedProcessVariable.getKey(), actualProcessVariableValue))
                     .build();
@@ -81,4 +87,5 @@ class ProcessVariableValidator implements PreValidator {
     private String toVariableString(@Nonnull final String key, @Nullable final Object value) {
         return String.format("{%s=%s}", key, value);
     }
+
 }
