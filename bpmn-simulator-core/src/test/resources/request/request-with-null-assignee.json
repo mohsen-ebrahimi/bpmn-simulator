@@ -1,0 +1,15 @@
+{
+  "bpmnUrl": "bpmn/payment-process-with-null-assignee.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "paymentTask",
+      "preconditions": [
+        {
+          "field": "assignee",
+          "expectedValue": null
+        }
+      ]
+    }
+  ]
+}
