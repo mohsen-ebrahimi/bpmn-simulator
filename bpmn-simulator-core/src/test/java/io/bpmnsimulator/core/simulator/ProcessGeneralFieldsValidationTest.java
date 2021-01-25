@@ -1,13 +1,12 @@
 package io.bpmnsimulator.core.simulator;
 
 import io.bpmnsimulator.core.BpmnTest;
-import io.bpmnsimulator.core.model.Field;
-import io.bpmnsimulator.core.model.ProcessSimulationRequest;
-import io.bpmnsimulator.core.model.ProcessSimulationResult;
+import io.bpmnsimulator.core.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.bpmnsimulator.core.util.JsonUtil.readJsonWithRelativePath;
+import static io.bpmnsimulator.core.util.StepUtil.getStep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -89,4 +88,44 @@ class ProcessGeneralFieldsValidationTest {
                 )
         ));
     }
+
+    @Test
+    void shouldReturnNoErrorWhenStepAndTaskAssigneeIsNull() {
+        //given
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-with-null-assignee.json";
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(requestUrl, ProcessSimulationRequest.class);
+
+        //when
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
+
+        //then
+        assertTrue(simulationResult.getErrors().isEmpty());
+    }
+
+    @Test
+    void shouldFailWhenStepAssigneeIsNullAndTaskAssigneeIsNotNull() {
+        //given
+        final String requestUrl = SIMULATION_REQUEST_BASE_URL + "request-without-error.json";
+        final ProcessSimulationRequest processSimulationRequest = readJsonWithRelativePath(requestUrl, ProcessSimulationRequest.class);
+        final Step step = getStep(processSimulationRequest, PAYMENT_STEP_ID);
+        step.getPreconditions().clear();
+        final Precondition<Object> assigneePrecondition = new Precondition<>();
+        assigneePrecondition.setField(Field.ASSIGNEE);
+        assigneePrecondition.setExpectedValue(null);
+        step.getPreconditions().add(assigneePrecondition);
+
+        //when
+        final ProcessSimulationResult simulationResult = processSimulator.simulate(processSimulationRequest);
+
+        //then
+        assertThat(simulationResult.getErrors(), contains(
+                allOf(
+                        hasProperty("stepId", is(PAYMENT_STEP_ID)),
+                        hasProperty("field", is(Field.ASSIGNEE)),
+                        hasProperty("expectedFieldValue", nullValue()),
+                        hasProperty("actualFieldValue", is("demo"))
+                )
+        ));
+    }
+
 }

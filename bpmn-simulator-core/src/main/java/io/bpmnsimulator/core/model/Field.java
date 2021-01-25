@@ -16,6 +16,7 @@ public enum Field {
     NAME("name"),
     ASSIGNEE("assignee"),
     CANDIDATE_USERS("candidateUsers"),
+    CANDIDATE_GROUPS("candidateGroups"),
     PROCESS_VARIABLES("processVariables"),
     TRANSITION("transition"),
     ;
