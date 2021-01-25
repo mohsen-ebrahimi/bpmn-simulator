@@ -12,27 +12,27 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.bpmnsimulator.core.model.Field.CANDIDATE_USERS;
+import static io.bpmnsimulator.core.model.Field.CANDIDATE_GROUPS;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class CandidateUsersValidator extends AbstractCandidatesValidator {
+class CandidateGroupsValidator extends AbstractCandidatesValidator {
 
     private final TaskInstanceService taskInstanceService;
 
     @Nonnull
     @Override
     public Field getSupportedField() {
-        return CANDIDATE_USERS;
+        return CANDIDATE_GROUPS;
     }
 
     @Nonnull
     @Override
     protected List<String> getCandidates(@Nonnull final Task task) {
-        return taskInstanceService.getCandidateUsers(task.getId())
+        return taskInstanceService.getCandidateGroups(task.getId())
                 .stream()
-                .map(IdentityLink::getUserId)
+                .map(IdentityLink::getGroupId)
                 .collect(Collectors.toList());
     }
 }

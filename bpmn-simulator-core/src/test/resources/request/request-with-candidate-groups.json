@@ -1,0 +1,28 @@
+{
+  "bpmnUrl": "bpmn/payment-process-with-candidate-users-and-groups.bpmn",
+  "deploymentName": "Payment Process",
+  "steps": [
+    {
+      "id": "startPayment",
+      "processVariables": {
+        "position": "Manager"
+      }
+    },
+    {
+      "id": "paymentTask",
+      "preconditions": [
+        {
+          "field": "name",
+          "expectedValue": "Payment Task"
+        },
+        {
+          "field": "candidateGroups",
+          "expectedValue": [
+            "accounting",
+            "hr"
+          ]
+        }
+      ]
+    }
+  ]
+}
