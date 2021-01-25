@@ -16,11 +16,10 @@
           "expectedValue": "Payment Task"
         },
         {
-          "field": "candidateUsers",
+          "field": "candidateGroups",
           "expectedValue": [
-            "demo",
-            "manager",
-            "supervisor"
+            "accounting",
+            "hr"
           ]
         }
       ]

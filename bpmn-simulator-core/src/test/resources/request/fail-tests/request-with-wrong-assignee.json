@@ -4,12 +4,20 @@
   "steps": [
     {
       "id": "paymentTask",
-      "name": "Payment Task",
-      "assignee": "NEW TASK ASSIGNEE",
       "processVariables": {
         "amount": 100,
         "description": "this is a test description"
-      }
+      },
+      "preconditions": [
+        {
+          "field": "name",
+          "expectedValue": "Payment Task"
+        },
+        {
+          "field": "assignee",
+          "expectedValue": "NEW TASK ASSIGNEE"
+        }
+      ]
     }
   ]
 }

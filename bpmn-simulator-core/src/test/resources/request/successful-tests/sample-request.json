@@ -10,11 +10,19 @@
     },
     {
       "id": "paymentTask",
-      "name": "Payment Task",
-      "candidateUsers": [
-        "demo",
-        "manager",
-        "supervisor"
+      "preconditions": [
+        {
+          "field": "name",
+          "expectedValue": "Payment Task"
+        },
+        {
+          "field": "candidateUsers",
+          "expectedValue": [
+            "demo",
+            "manager",
+            "supervisor"
+          ]
+        }
       ]
     }
   ]

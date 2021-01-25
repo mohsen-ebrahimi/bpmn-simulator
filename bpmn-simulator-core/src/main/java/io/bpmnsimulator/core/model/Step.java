@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,21 +18,13 @@ public class Step {
     @Nonnull
     private String id;
 
-    @Nullable
-    private String name;
-
-    @Nullable
-    private String assignee;
+    @Nonnull
+    private List<Precondition<Object>> preconditions = new ArrayList<>();
 
     @Nonnull
-    private List<String> candidateUsers = new ArrayList<>();
-
-    @Nullable
-    private Precondition precondition;
-
-    @Nullable
-    private PostCondition postCondition;
+    private List<PostCondition<Object>> postConditions = new ArrayList<>();
 
     @Nonnull
     private Map<String, Object> processVariables = new HashMap<>();
+
 }
