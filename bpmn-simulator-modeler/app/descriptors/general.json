@@ -1,0 +1,24 @@
+{
+  "name": "Simulator",
+  "prefix": "simulator",
+  "uri": "http://simulator",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "SimulatorActivity",
+      "extends": [
+        "bpmn:Activity"
+      ],
+      "properties": [
+        {
+          "name": "expectedName",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}
